@@ -1,11 +1,16 @@
 /**
  * AI Service - Handles all AI model interactions
- * Supports OpenAI and can be extended for Anthropic
+ * Supports OpenAI or Gemini (Google)
  */
 
 const OpenAI = require('openai');
+const axios = require('axios');
 
-// Initialize OpenAI client
+const PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase();
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
+// Initialize OpenAI client (only used when AI_PROVIDER=openai)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -49,17 +54,34 @@ async function generateForPlatform(platform, content, tone = 'professional') {
         throw new Error(`Unsupported platform: ${platform}`);
     }
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: prompt }
-      ],
-      temperature: 0.7,
-      max_tokens: 1500
-    });
+    let generatedContent;
 
-    const generatedContent = response.choices[0].message.content;
+    if (PROVIDER === 'gemini') {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) throw new Error('GEMINI_API_KEY is missing');
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+      const response = await axios.post(url, {
+        contents: [
+          { role: 'user', parts: [{ text: `${systemPrompt}\n\n${prompt}` }] }
+        ],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
+      });
+
+      generatedContent = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!generatedContent) throw new Error('Empty response from Gemini');
+    } else {
+      const response = await openai.chat.completions.create({
+        model: OPENAI_MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+      generatedContent = response.choices[0].message.content;
+    }
     
     // Parse JSON response
     try {
@@ -83,7 +105,7 @@ async function generateMultiPlatform(options) {
   const { content, platforms, tone = 'professional' } = options;
   
   const results = {};
-  const usage = { totalTokens: 0, model: 'gpt-4o-mini' };
+  const usage = { totalTokens: 0, model: PROVIDER === 'gemini' ? GEMINI_MODEL : OPENAI_MODEL };
 
   // Generate for each requested platform
   for (const platform of platforms) {
