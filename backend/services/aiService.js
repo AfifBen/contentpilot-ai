@@ -10,10 +10,13 @@ const PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase();
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
-// Initialize OpenAI client (only used when AI_PROVIDER=openai)
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// Initialize OpenAI client only if needed
+let openai = null;
+if (PROVIDER === 'openai') {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+}
 
 // Import prompts
 const twitterPrompts = require('../prompts/twitter');
