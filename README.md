@@ -1,6 +1,10 @@
 # ContentPilot AI
 
-Transform one piece of content into multiple social formats (Twitter/X, LinkedIn, Newsletter, Instagram) using AI.
+![GitHub license](https://img.shields.io/github/license/AfifBen/contentpilot-ai) ![GitHub stars](https://img.shields.io/github/stars/AfifBen/contentpilot-ai) ![GitHub issues](https://img.shields.io/github/issues/AfifBen/contentpilot-ai) ![Demo](https://img.shields.io/badge/demo-live-brightgreen)
+
+**Démo :** https://contentpilot-ai.vercel.app/
+
+Transformez un contenu unique en plusieurs formats sociaux (Twitter/X, LinkedIn, Newsletter, Instagram) grâce à l’IA.
 
 ## ✨ Features
 - Paste text or provide a URL
@@ -11,7 +15,7 @@ Transform one piece of content into multiple social formats (Twitter/X, LinkedIn
 ## 🧱 Stack
 - Frontend: React + Vite + TailwindCSS
 - Backend: Node.js + Express
-- AI: OpenAI‑compatible API
+- IA: Gemini / OpenAI (API compatibles)
 
 ## 🚀 Quick Start
 
@@ -55,6 +59,9 @@ GEMINI_MODEL=gemini-1.5-flash-latest
 - Auth + history
 - Templates
 - Direct integrations (Buffer, Hootsuite)
+
+## 🔎 SEO Keywords
+content repurposing, AI content generator, micro‑saas, social media automation, LinkedIn post generator, Twitter thread generator, newsletter generator
 
 ## 📄 License
 MIT — see [LICENSE](LICENSE)
