@@ -64,12 +64,24 @@ async function generateForPlatform(platform, content, tone = 'professional') {
       if (!apiKey) throw new Error('GEMINI_API_KEY is missing');
 
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
-      const response = await axios.post(url, {
+      const payload = {
         contents: [
           { role: 'user', parts: [{ text: `${systemPrompt}\n\n${prompt}` }] }
         ],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
-      });
+        generationConfig: { temperature: 0.7, maxOutputTokens: 3000 }
+      };
+
+      let response;
+      try {
+        response = await axios.post(url, payload);
+      } catch (err) {
+        if (err.response?.status === 429) {
+          await new Promise(r => setTimeout(r, 1200));
+          response = await axios.post(url, payload);
+        } else {
+          throw err;
+        }
+      }
 
       generatedContent = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!generatedContent) throw new Error('Empty response from Gemini');
@@ -96,6 +108,14 @@ async function generateForPlatform(platform, content, tone = 'professional') {
     try {
       return JSON.parse(cleaned);
     } catch (parseError) {
+      // Try to recover array of strings
+      const matches = cleaned.match(/"([^"\\]*(?:\\.[^"\\]*)*)"/g);
+      if (matches && matches.length) {
+        const items = matches.map(m => {
+          try { return JSON.parse(m); } catch { return m.replace(/^"|"$/g, ''); }
+        });
+        return items;
+      }
       console.warn('Failed to parse JSON, returning cleaned content:', parseError.message);
       return { raw: cleaned };
     }
