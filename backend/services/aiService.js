@@ -86,9 +86,14 @@ async function generateForPlatform(platform, content, tone = 'professional') {
       generatedContent = response.choices[0].message.content;
     }
     
-    // Parse JSON response
+    // Parse JSON response (strip code fences if needed)
     try {
-      return JSON.parse(generatedContent);
+      const cleaned = generatedContent
+        .replace(/^```json\n?/i, '')
+        .replace(/^```\n?/i, '')
+        .replace(/```$/i, '')
+        .trim();
+      return JSON.parse(cleaned);
     } catch (parseError) {
       console.warn('Failed to parse JSON, returning raw content:', parseError.message);
       return { raw: generatedContent };
