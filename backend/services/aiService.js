@@ -8,7 +8,7 @@ const axios = require('axios');
 
 const PROVIDER = (process.env.AI_PROVIDER || 'openai').toLowerCase();
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest';
 
 // Initialize OpenAI client only if needed
 let openai = null;
