@@ -87,16 +87,17 @@ async function generateForPlatform(platform, content, tone = 'professional') {
     }
     
     // Parse JSON response (strip code fences if needed)
+    const cleaned = generatedContent
+      .replace(/^```json\n?/i, '')
+      .replace(/^```\n?/i, '')
+      .replace(/```$/i, '')
+      .trim();
+
     try {
-      const cleaned = generatedContent
-        .replace(/^```json\n?/i, '')
-        .replace(/^```\n?/i, '')
-        .replace(/```$/i, '')
-        .trim();
       return JSON.parse(cleaned);
     } catch (parseError) {
-      console.warn('Failed to parse JSON, returning raw content:', parseError.message);
-      return { raw: generatedContent };
+      console.warn('Failed to parse JSON, returning cleaned content:', parseError.message);
+      return { raw: cleaned };
     }
   } catch (error) {
     console.error(`AI generation error for ${platform}:`, error.message);
