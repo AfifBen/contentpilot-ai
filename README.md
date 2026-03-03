@@ -42,9 +42,10 @@ Backend:  http://localhost:4000
 
 ## 🔐 Environment
 See `backend/.env.example`:
-```
-OPENAI_API_KEY=your_key_here
-OPENAI_MODEL=gpt-4o-mini
+```bash
+AI_PROVIDER=gemini  # or openai
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-1.5-flash-latest
 ```
 
 ## 📦 Scripts
