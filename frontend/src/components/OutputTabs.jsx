@@ -112,9 +112,10 @@ export default function OutputTabs({ data }) {
       );
     }
 
+    const display = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
     return (
       <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <p className="text-gray-900 whitespace-pre-wrap">{content}</p>
+        <pre className="text-gray-900 whitespace-pre-wrap text-sm">{display}</pre>
       </div>
     );
   };
